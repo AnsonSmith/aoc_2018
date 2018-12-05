@@ -16,6 +16,22 @@ defmodule Aoc2018.Day4 do
       String.to_integer(sleepy_guard_id) * most_mins_slept
   end
 
+  def part_2() do
+    {_curr_action,  guards} =
+      get_input()
+      |> Enum.map(&parse_action/1)
+      |> Enum.reduce({%{}, %{}}, fn(%{"action" => action, "minutes" => minute }, {curr_action, results}) ->
+         handle_action(action, minute, curr_action, results)
+      end)
+
+      {guard_id, {minute, _times_asleep}} = guards
+      |> Enum.map(fn({guard_id, {_total_mins, each_min}})->
+      {guard_id, Enum.max_by(each_min, fn({_min, times})-> times end)}
+      end)
+      |> Enum.max_by(fn({_id, {_min, times}}) -> times end)
+      String.to_integer(guard_id) * minute
+  end
+
   defp parse_action(line) do
     regex = ~r/\[\d+-\d+-\d+.\d+:(?<minutes>\d+)\].(?<action>.+)/
     Regex.named_captures(regex,line)
