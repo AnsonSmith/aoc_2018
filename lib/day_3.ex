@@ -1,31 +1,32 @@
 defmodule Aoc2018.Day3 do
   def part_1() do
-      get_input()
-      |> Stream.map(fn line -> line |> parse_line() end)
-      |> Stream.map(fn dimensions -> build_coords(dimensions) end)
-      |> Stream.flat_map(fn x -> x end)
-      |> get_overlapping_coords()
-      |> Enum.count()
+    get_input()
+    |> Stream.map(fn line -> line |> parse_line() end)
+    |> Stream.map(fn dimensions -> build_coords(dimensions) end)
+    |> Stream.flat_map(fn x -> x end)
+    |> get_overlapping_coords()
+    |> Enum.count()
   end
 
   def part_2() do
     coordinates_with_ids =
       get_input()
       |> Stream.map(fn line -> line |> parse_line() end)
-      |> Stream.map(fn dimensions -> {Map.get(dimensions, "claim_id"), build_coords(dimensions)} end)
+      |> Stream.map(fn dimensions ->
+        {Map.get(dimensions, "claim_id"), build_coords(dimensions)}
+      end)
 
     overlapping_coords =
       coordinates_with_ids
-      |> Stream.flat_map( fn({_id, coords}) -> coords end)
+      |> Stream.flat_map(fn {_id, coords} -> coords end)
       |> get_overlapping_coords()
 
-    #Enum.filter(coordinates_with_ids, fn({_id, coords}) ->
+    # Enum.filter(coordinates_with_ids, fn({_id, coords}) ->
     #  Enum.any?(coords, fn(coord) ->  Enum.member?(overlapping_coords, coord) end)
-    #end)
+    # end)
     Enum.find_value(coordinates_with_ids, fn {id, plots} ->
       if Enum.any?(plots, &Enum.member?(overlapping_coords, &1)), do: false, else: id
     end)
-
   end
 
   defp get_overlapping_coords(all_coords) do
@@ -35,7 +36,7 @@ defmodule Aoc2018.Day3 do
       acc
     end)
     |> Enum.filter(fn {_coord, cnt} -> cnt > 1 end)
-    |> Enum.map(fn({coord, _cnt})-> coord end)
+    |> Enum.map(fn {coord, _cnt} -> coord end)
   end
 
   defp parse_line(line) do
